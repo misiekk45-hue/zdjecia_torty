@@ -1,42 +1,225 @@
 <!DOCTYPE html>
 <html lang="pl">
-<head>   <meta charset="UTF-8">   <meta name="viewport" content="width=device-width, initial-scale=1.0">   <title>Galeria Tortów</title>   <style>       body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f4f9; margin: 0; padding: 10px; }       .sticky-header { position: sticky; top: 0; background: #f4f4f9; padding: 10px 0; z-index: 10; }       #search { width: 100%; padding: 15px; border-radius: 25px; border: 1px solid #ddd; font-size: 16px; outline: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }       .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 10px; }       .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; }       .card img { width: 100%; height: 150px; object-fit: cover; display: block; }       .card p { padding: 8px; margin: 0; font-size: 12px; color: #333; text-align: center; height: 34px; overflow: hidden; }              /* Modal (Duże zdjęcie) */       #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; text-align: center; color: white; }       #modal img { max-width: 95%; max-height: 80%; margin-top: 50px; border-radius: 8px; }       .modal-btns { margin-top: 20px; }       .btn { padding: 12px 25px; background: #007bff; color: white; border: none; border-radius: 25px; font-size: 16px; cursor: pointer; margin: 5px; }       .close-btn { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; }   </style>
+<head>   
+<meta charset="UTF-8">   <meta name="viewport" content="width=device-width, initial-scale=1.0">   <title>Galeria Tortów</title>   <style>       body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f4f9; margin: 0; padding: 10px; }       .sticky-header { position: sticky; top: 0; background: #f4f4f9; padding: 10px 0; z-index: 10; }       #search { width: 100%; padding: 15px; border-radius: 25px; border: 1px solid #ddd; font-size: 16px; outline: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }       .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 10px; }       .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; }       .card img { width: 100%; height: 150px; object-fit: cover; display: block; }       .card p { padding: 8px; margin: 0; font-size: 12px; color: #333; text-align: center; height: 34px; overflow: hidden; }              /* Modal (Duże zdjęcie) */       #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; text-align: center; color: white; }       #modal img { max-width: 95%; max-height: 80%; margin-top: 50px; border-radius: 8px; }       .modal-btns { margin-top: 20px; }       .btn { padding: 12px 25px; background: #007bff; color: white; border: none; border-radius: 25px; font-size: 16px; cursor: pointer; margin: 5px; }       .close-btn { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; }   </style>
+<link rel="icon" type="image/png" href="logo.png">
 </head>
 <style>
-    body { font-family: sans-serif; background: #f4f4f9; margin: 0; padding: 10px; }
-    .sticky-header { position: sticky; top: 0; background: #f4f4f9; padding: 10px 0; z-index: 10; }
-    #search { width: 100%; padding: 15px; border-radius: 25px; border: 1px solid #ddd; font-size: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    
-    /* Siatka miniaturek */
+    :root {
+        --primary-color: #ffb6c1; /* Jasny, ciepły róż */
+        --secondary-color: #ff69b4; /* Mocniejszy róż do detali */
+        --bg-color: #fff5f7; /* Bardzo jasny różowy odcień tła */
+        --card-bg: #ffffff;
+    }
+
+    body { 
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+        background: var(--bg-color); 
+        margin: 0; 
+        padding-bottom: 20px;
+        color: #444;
+    }
+
+    /* Nagłówek */
+    .header {
+        position: sticky;
+        top: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 10px 15px;
+        z-index: 100;
+        box-shadow: 0 4px 15px rgba(255, 182, 193, 0.2);
+        border-bottom: 2px solid var(--primary-color);
+		box-shadow: 0 10px 30px rgba(255, 182, 193, 0.3);
+        
+        /* To ustawia logo i wyszukiwarkę obok siebie */
+        display: flex;
+        align-items: center;
+        gap: 15px; 
+    }
+
+    .logo {
+        height: 150px; /* Zmniejszyłem nieco, żeby pasowało do linii z szukajką */
+        width: auto;
+        object-fit: contain;
+        flex-shrink: 0; /* Logo nie będzie się zgniatać */
+    }
+
+    .search-container {
+        flex-grow: 1; /* Wyszukiwarka zajmie resztę miejsca */
+        max-width: none; /* Pozwalamy jej się rozciągać */
+    }
+
+.search-container {
+    position: relative;
+}
+.search-container::before {
+    content: '🔍';
+    position: absolute;
+    left: 18px; /* Przesunięcie samej lupy od krawędzi ramki */
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    pointer-events: none;
+    z-index: 5;
+}
+#search {
+
+}
+
+/* Animacja dla przycisku udostępniania */
+.share-btn {
+    animation: pulse 2s infinite;
+	background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.4); }
+    70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+
+/* Licznik wyników */
+#results-count {
+    font-size: 12px;
+    color: var(--secondary-color);
+    text-align: center;
+    margin-top: 5px;
+    font-weight: bold;
+}
+    #search { 
+        width: 100%; 
+        padding: 14px 45px; 
+        border-radius: 30px; 
+        border: 2px solid var(--primary-color); 
+        font-size: 16px; 
+        outline: none;
+        transition: 0.3s;
+        box-sizing: border-box;
+        background: #fff;
+    }
+
+    #search:focus {
+        box-shadow: 0 0 12px rgba(255, 182, 193, 0.5);
+        border-color: var(--secondary-color);
+    }
+
+    /* Siatka zdjęć */
     .gallery { 
         display: grid; 
-        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); /* Mniejsze miniaturki */
-        gap: 5px; 
-        margin-top: 10px; 
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
+        gap: 15px; 
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
     }
+
     .card { 
-        background: white; 
-        aspect-ratio: 1 / 1; /* Kwadratowe kafelki */
+        background: var(--card-bg); 
+        aspect-ratio: 1 / 1; 
         overflow: hidden; 
-        border-radius: 8px; 
+        border-radius: 20px; /* Bardziej zaokrąglone rogi */
         cursor: pointer; 
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        border: 1px solid rgba(255, 182, 193, 0.3);
+		
     }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(255, 182, 193, 0.4);
+		img { transform: scale(1.1); }
+    }
+
     .card img { 
         width: 100%; 
         height: 100%; 
-        object-fit: cover; /* Zdjęcie wypełnia kwadrat bez rozciągania */
+        object-fit: cover; 
+		transition: transform 0.5s ease;
     }
 
-    /* Modal (Duży widok) */
-    #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 100; overflow-y: auto; }
-    #modal img { width: 100%; max-height: 70vh; object-fit: contain; background: #000; }
-    .modal-content { padding: 20px; text-align: center; color: #333; }
-    .close-btn { position: absolute; top: 15px; right: 20px; font-size: 35px; color: white; text-shadow: 0 0 10px #000; z-index: 101; cursor: pointer; }
-    .btn { padding: 15px 30px; background: #25D366; color: white; border: none; border-radius: 30px; font-size: 18px; margin-top: 20px; }
+    /* Modal - Widok szczegółów */
+    #modal { 
+        display: none; 
+        position: fixed; 
+        top: 0; left: 0; 
+        width: 100%; height: 100%; 
+        background: #fff; 
+        z-index: 1000; 
+        overflow-y: auto;
+    }
+
+    .modal-nav {
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+        background: #fff;
+    }
+
+    .close-btn { font-size: 32px; color: var(--secondary-color); cursor: pointer; }
+
+    #modalImg { 
+        width: 100%; 
+        max-height: 55vh; 
+        object-fit: contain; 
+        background: #fafafa;
+    }
+
+    .modal-info { padding: 30px; text-align: center; }
+    
+    .modal-desc { 
+        font-size: 18px; 
+        font-weight: 500;
+        margin-bottom: 25px;
+        color: #555;
+    }
+
+    .share-btn { 
+        background: #25D366; /* WhatsApp Green */
+        color: white; 
+        padding: 16px 45px; 
+        border-radius: 50px; 
+        border: none; 
+        font-size: 16px; 
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+        cursor: pointer;
+    }
+	.card {
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 </style>
 <body>
 
-<div class="sticky-header">   <input type="text" id="search" placeholder="Szukaj tortu (np. róże, 18stka)..." onkeyup="filter()">
+<div class="header">
+    <img src="https://raw.githubusercontent.com/misiekk45-hue/zdjecia_torty/main/logo.png" alt="Logo" class="logo" onerror="this.style.display='none'">
+    <div class="search-container">
+        <input type="text" id="search" placeholder="Czego szukasz? (np. chrzest, czekolada)..." onkeyup="filter()">
+    </div>
+	<div id="results-count"></div>
+</div>
+
+<div class="gallery" id="gallery">
+    </div>
+
+<div id="modal">
+    <div class="modal-nav">
+        <span style="font-weight: bold;">Szczegóły tortu</span>
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+    </div>
+    <img id="modalImg" src="">
+    <div class="modal-info">
+        <p id="modalDesc" class="modal-desc"></p>
+        <button class="share-btn" id="shareBtn">Udostępnij projekt</button>
+    </div>
 </div>
 
 <div class="gallery" id="gallery">
@@ -1031,14 +1214,29 @@ MakijażiSmartfon'> <img src='https://raw.githubusercontent.com/misiekk45-hue/zd
 </div>
 
 <script>
-    function filter() {
-        let val = document.getElementById('search').value.toLowerCase();
-        let cards = document.getElementsByClassName('card');
-        for (let i = 0; i < cards.length; i++) {
-            let tags = cards[i].getAttribute('data-tags').toLowerCase();
-            cards[i].style.display = (tags.includes(val)) ? "block" : "none";
+   function filter() {
+    let val = document.getElementById('search').value.toLowerCase();
+    let cards = document.getElementsByClassName('card');
+    let count = 0;
+    
+    for (let i = 0; i < cards.length; i++) {
+        let tags = cards[i].getAttribute('data-tags').toLowerCase();
+        if (tags.includes(val)) {
+            cards[i].style.display = "block";
+            count++;
+        } else {
+            cards[i].style.display = "none";
         }
     }
+    
+    // Aktualizacja licznika
+    const countDiv = document.getElementById('results-count');
+    if (val.length > 0) {
+        countDiv.innerText = "Znaleziono: " + count + " projektów";
+    } else {
+        countDiv.innerText = "";
+    }
+}
 
     document.getElementById('gallery').addEventListener('click', function(e) {
         let card = e.target.closest('.card');
@@ -1059,6 +1257,7 @@ MakijażiSmartfon'> <img src='https://raw.githubusercontent.com/misiekk45-hue/zd
     });
 
     function closeModal() { document.getElementById('modal').style.display = 'none'; }
+	document.body.style.overflow = 'hidden';
 </script>
 
 </body>
