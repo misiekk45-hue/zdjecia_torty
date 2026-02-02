@@ -195,6 +195,7 @@
 </style>
 <body>
 
+
 <div class="header">
     <img src="https://raw.githubusercontent.com/misiekk45-hue/zdjecia_torty/main/logo.png" alt="Logo" class="logo" onerror="this.style.display='none'">
     <div class="search-container">
@@ -225,8 +226,7 @@
 <div class='card' data-tags='Spider-Man Figurka Pająk (czarny) Wydruk cukrowy'> <img src='https://raw.githubusercontent.com/misiekk45-hue/zdjecia_torty/main/12.jpg' loading='lazy'> </div>
 <div class='card' data-tags='Tort Bluey Bluey Bingo'> <img src='https://raw.githubusercontent.com/misiekk45-hue/zdjecia_torty/main/13.jpg' loading='lazy'> </div>
 <div class='card' data-tags='STRAŻAK SAM Strażak Sam, figurka z masy cukrowej, modelowanie 3D, wóz strażacki, 3. urodziny, napis z liter, droga z pasami jezdni, dekoracja płomieniami #StrażakSam #FiremanSam #WózStrażacki #TortNa3Urodziny #FigurkaZmasyCukrowej #TortDlaMai #Płomienie #TortBajkowy'> <img src='https://raw.githubusercontent.com/misiekk45-hue/zdjecia_torty/main/14.jpg' loading='lazy'> </div>
-<div class='card' data-tags='  
-Farma'> <img src='https://raw.githubusercontent.com/misiekk45-hue/zdjecia_torty/main/15.jpg' loading='lazy'> </div>
+<div class='card' data-tags='Farma'> <img src='https://raw.githubusercontent.com/misiekk45-hue/zdjecia_torty/main/15.jpg' loading='lazy'> </div>
 <div class='card' data-tags='Motyw logo superbohatera (stylizowany emblemat Iron Mana/Marvel) Stylizowany emblemat w kształcie pięści i postaci w locie, jadalna ramka, napis "STAS 8 LAT", dekoracja 2D z masy cukrowej, urodziny #TortLogo #EmblematSuperbohatera #TortDlaChłopca #8Urodziny #STAS8LAT #Dekoracja2D #MasaCukrowa'> <img src='https://raw.githubusercontent.com/misiekk45-hue/zdjecia_torty/main/16.jpg' loading='lazy'> </div>
 <div class='card' data-tags='Samochód BMW Tort 3D Modelowanie masy cukrowej'> <img src='https://raw.githubusercontent.com/misiekk45-hue/zdjecia_torty/main/17.jpg' loading='lazy'> </div>
 <div class='card' data-tags='Świnka Peppa figurki 3D Świnka Peppa i George tęcza z masy cukrowej'> <img src='https://raw.githubusercontent.com/misiekk45-hue/zdjecia_torty/main/18.jpg' loading='lazy'> </div>
@@ -1210,20 +1210,15 @@ MakijażiSmartfon'> <img src='https://raw.githubusercontent.com/misiekk45-hue/zd
 </div>
 
 <script>
-    // 1. ZAMYKANIE OKNA (MODAL)
     function closeModal() {
-        const modal = document.getElementById('modal');
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto'; // Przywraca przewijanie strony głównej
+        document.getElementById('modal').style.display = 'none';
+        document.body.style.overflow = 'auto';
     }
 
-    // 2. WYSZUKIWARKA + LICZNIK WYNIKÓW
     function filter() {
         const val = document.getElementById('search').value.toLowerCase();
         const cards = document.getElementsByClassName('card');
-        const countDiv = document.getElementById('results-count');
         let count = 0;
-        
         for (let i = 0; i < cards.length; i++) {
             const tags = cards[i].getAttribute('data-tags').toLowerCase();
             if (tags.includes(val)) {
@@ -1233,63 +1228,40 @@ MakijażiSmartfon'> <img src='https://raw.githubusercontent.com/misiekk45-hue/zd
                 cards[i].style.display = "none";
             }
         }
-        
-        // Aktualizacja napisu pod wyszukiwarką
-        if (val.length > 0) {
-            countDiv.innerText = "Znaleziono: " + count + " inspiracji";
-        } else {
-            countDiv.innerText = "";
-        }
+        document.getElementById('results-count').innerText = val ? "Znaleziono: " + count : "";
     }
 
-    // 3. OBSŁUGA KLIKNIĘCIA W KARTĘ (POWIĘKSZANIE)
-    document.getElementById('gallery').addEventListener('click', function(e) {
-        // Znajduje najbliższy element z klasą .card (nawet jeśli klikniesz w sam obrazek)
+    // GŁÓWNA OBSŁUGA KLIKNIĘCIA
+    document.addEventListener('click', function (e) {
         const card = e.target.closest('.card');
-        
         if (card) {
-            const imgElement = card.querySelector('img');
-            const imgSrc = imgElement.src;
-            const description = card.getAttribute('data-tags');
+            console.log("Kliknięto kartę!"); // Test w konsoli
+            const img = card.querySelector('img');
+            const modal = document.getElementById('modal');
+            const modalImg = document.getElementById('modalImg');
+            const modalDesc = document.getElementById('modalDesc');
 
-            // Wstrzykujemy dane do Modala
-            document.getElementById('modalImg').src = imgSrc;
-            document.getElementById('modalDesc').innerText = description;
-            
-            // Pokazujemy okno i blokujemy tło
-            document.getElementById('modal').style.display = 'block';
-            document.body.style.overflow = 'hidden';
-
-            // 4. OBSŁUGA UDOSTĘPNIANIA (WHATSAPP / SYSTEMOWE)
-            document.getElementById('shareBtn').onclick = function() {
-                if (navigator.share) {
-                    navigator.share({
-                        title: 'Inspiracja na Tort',
-                        text: description,
-                        url: imgSrc
-                    }).catch(console.error);
-                } else {
-                    // Jeśli przeglądarka nie wspiera navigator.share (np. niektóre na PC)
-                    window.open('https://wa.me/?text=' + encodeURIComponent(description + " " + imgSrc));
-                }
-            };
+            if (modal && modalImg) {
+                modalImg.src = img.src;
+                modalDesc.innerText = card.getAttribute('data-tags');
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            } else {
+                alert("Błąd: Nie znaleziono okna Modal w kodzie!");
+            }
         }
     });
 
-    // 5. DODATEK: POWRÓT NA GÓRĘ PO KLIKNIĘCIU W LOGO
-    // Jeśli Twoje logo ma klasę .logo, to zadziała
-    const logo = document.querySelector('.logo');
-    if (logo) {
-        logo.style.cursor = 'pointer';
-        logo.addEventListener('click', function() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-    }
-
-    // Zamykanie modala klawiszem ESC (dla wygody na komputerze)
-    document.addEventListener('keydown', function(e) {
-        if (e.key === "Escape") closeModal();
-    });
+    // Udostępnianie
+    document.getElementById('shareBtn').onclick = function() {
+        const imgSrc = document.getElementById('modalImg').src;
+        const text = document.getElementById('modalDesc').innerText;
+        if (navigator.share) {
+            navigator.share({ title: 'Tort', text: text, url: imgSrc });
+        } else {
+            window.open('https://wa.me/?text=' + encodeURIComponent(text + " " + imgSrc));
+        }
+    };
 </script>
 
 </body>
