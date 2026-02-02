@@ -77,14 +77,7 @@
         box-shadow: 0 0 10px rgba(255, 105, 180, 0.2);
     }
 
-    #results-count {
-        font-size: 11px;
-        color: var(--dark-pink);
-        margin-top: 4px;
-        position: absolute;
-        width: 100%;
-        text-align: center;
-    }
+   
 
     /* --- GALERIA --- */
     .gallery { 
@@ -201,8 +194,7 @@
     <div class="search-container">
         <input type="text" id="search" placeholder="Czego szukasz? (np. chrzest, czekolada)..." onkeyup="filter()">
     </div>
-	<div id="results-count"></div>
-</div>
+	results-count
 
 <div class="gallery" id="gallery">
     </div>
@@ -216,9 +208,7 @@
     <div class="modal-info">
         <p id="modalDesc" class="modal-desc"></p>
         <button class="share-btn" id="shareBtn">Udostępnij projekt</button>
-    </div>
-</div>
-
+    </div>results-count
 <div class="gallery" id="gallery">
 <div class='card' data-tags='Omni-Man Nolan Grayson Komiksy Invincible'> <img src='https://raw.githubusercontent.com/misiekk45-hue/zdjecia_torty/main/1.jpg' loading='lazy'> </div>
 <div class='card' data-tags='Wędkarstwo i Osiemnaste Urodziny Figurka wędkarza z wędziskiem Pałka wodna (imitacja sitowia)'> <img src='https://raw.githubusercontent.com/misiekk45-hue/zdjecia_torty/main/10.jpg' loading='lazy'> </div>
@@ -1215,21 +1205,22 @@ MakijażiSmartfon'> <img src='https://raw.githubusercontent.com/misiekk45-hue/zd
         document.body.style.overflow = 'auto';
     }
 
-    function filter() {
-        const val = document.getElementById('search').value.toLowerCase();
-        const cards = document.getElementsByClassName('card');
-        let count = 0;
-        for (let i = 0; i < cards.length; i++) {
-            const tags = cards[i].getAttribute('data-tags').toLowerCase();
-            if (tags.includes(val)) {
-                cards[i].style.display = "block";
-                count++;
-            } else {
-                cards[i].style.display = "none";
-            }
-        }
-        document.getElementById('results-count').innerText = val ? "Znaleziono: " + count : "";
+   function filter() {
+    const val = document.getElementById('search').value.toLowerCase();
+    const cards = document.getElementsByClassName('card');
+    const welcome = document.querySelector('.welcome-section');
+    
+    // Ukrywanie/pokazywanie powitania
+    if (welcome) {
+        welcome.style.display = val.length > 0 ? 'none' : 'block';
     }
+    
+    // Filtrowanie kart (bez licznika)
+    for (let i = 0; i < cards.length; i++) {
+        const tags = cards[i].getAttribute('data-tags').toLowerCase();
+        cards[i].style.display = tags.includes(val) ? "block" : "none";
+    }
+}
 
     // GŁÓWNA OBSŁUGA KLIKNIĘCIA
     document.addEventListener('click', function (e) {
